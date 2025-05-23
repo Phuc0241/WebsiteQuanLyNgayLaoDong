@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace QuanLyNgayLaoDong.Areas.Admin.Controllers
 {
+    [Authorize]
     public class AdminHomeController : Controller
     {
         // GET: Admin/AdminHome

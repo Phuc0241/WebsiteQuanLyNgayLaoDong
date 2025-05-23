@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace QuanLyNgayLaoDong.Areas.SinhVien.Controllers
 {
+    [Authorize]
     public class TrangChuController : Controller
     {
         // GET: SinhVien/TrangChu

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace QuanLyNgayLaoDong.Controllers
 {
@@ -24,35 +25,41 @@ namespace QuanLyNgayLaoDong.Controllers
                 var user = CheckLogin(model.Username, model.Password);
                 if (user != null)
                 {
-                    model.Role = user.Role;
-                    Session["User"] = user;
+                    // Tạo ticket Forms Authentication
+                    FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
+                        1, // version
+                        user.Username, // username
+                        DateTime.Now,
+                        DateTime.Now.AddMinutes(30), // thời hạn
+                        false,
+                        user.Role, // role nằm ở UserData
+                        FormsAuthentication.FormsCookiePath
+                    );
 
-                    // Chuyển hướng dựa trên vai trò
-                    if (user.Role == "Admin")
+                    // Mã hóa ticket và tạo cookie
+                    string encTicket = FormsAuthentication.Encrypt(ticket);
+                    HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
+                    Response.Cookies.Add(cookie);
+
+                    // Điều hướng theo vai trò
+                    switch (user.Role)
                     {
-                        return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
-                    }
-                    else if (user.Role == "QuanLy")
-                    {
-                        // Chuyển hướng cho các vai trò khác, ví dụ Admin
-                        return RedirectToAction("Index", "TrangChu", new { area = "QuanLy" });
-                    }
-                    else if (user.Role == "SinhVien")
-                    {
-                        // Chuyển hướng cho các vai trò khác, ví dụ Admin
-                        return RedirectToAction("Index", "TrangChu", new { area = "SinhVien" });
-                    }
-                    else
-                    {
-                        // Chuyển hướng cho các vai trò khác, ví dụ Admin
-                        return RedirectToAction("Index", "TrangChu", new { area = "LopTruong" });
+                        case "Admin":
+                            return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
+                        case "QuanLy":
+                            return RedirectToAction("Index", "TrangChu", new { area = "QuanLy" });
+                        case "SinhVien":
+                            return RedirectToAction("Index", "TrangChu", new { area = "SinhVien" });
+                        case "LopTruong":
+                            return RedirectToAction("Index", "TrangChu", new { area = "LopTruong" });
+                        default:
+                            return RedirectToAction("Login");
                     }
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Tài khoản hoặc mật khẩu không đúng");
-                }
+
+                ModelState.AddModelError("", "Tài khoản hoặc mật khẩu không đúng.");
             }
+
             return View(model);
         }
 
@@ -84,7 +91,8 @@ namespace QuanLyNgayLaoDong.Controllers
 
         public ActionResult Logout()
         {
-            Session["User"] = null;
+            //return RedirectToAction("Login");
+            FormsAuthentication.SignOut();
             return RedirectToAction("Login");
         }
     }
