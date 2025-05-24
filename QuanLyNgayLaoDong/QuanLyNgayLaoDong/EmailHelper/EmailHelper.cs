@@ -8,8 +8,8 @@ public static class EmailHelper
     {
         try
         {
-            var fromEmail = "your_email@gmail.com";
-            var fromPassword = "your_app_password"; // App password
+            var fromEmail = "0022410131@student.dthu.edu.vn";
+            var fromPassword = "gvvg trtx yjrh qlbx"; // App password
 
             var smtp = new SmtpClient
             {
@@ -45,15 +45,17 @@ public static class EmailHelper
             padding: 20px;
             background-color: #fff;
             border-radius: 6px;
+            text-align: center;
         }}
-        .reset-button {{
+         .reset-button {{
             display: inline-block;
-            margin-top: 20px;
+            margin: 20px auto 0 auto;
             padding: 12px 24px;
-            background-color: #28a745;
-            color: white;
+            background-color: #DDDDDD;
+            color: #66FFCC;
             text-decoration: none;
             border-radius: 5px;
+            font-weight: bold;
         }}
         .email-footer {{
             margin-top: 30px;
@@ -66,7 +68,7 @@ public static class EmailHelper
 <body>
     <div class='email-container'>
         <div class='email-header'>
-            <img src='https://yourdomain.com/logo.png' alt='Logo' class='email-logo' />
+            <img src='https://i.ibb.co/CKy2xm9K/logo.jpg' alt='Logo' class='email-logo' />
             <h2>Yêu cầu đặt lại mật khẩu</h2>
         </div>
         <div class='email-body'>
@@ -95,8 +97,9 @@ public static class EmailHelper
 
             return true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            // Bạn có thể log lỗi tại đây nếu muốn
             return false;
         }
     }

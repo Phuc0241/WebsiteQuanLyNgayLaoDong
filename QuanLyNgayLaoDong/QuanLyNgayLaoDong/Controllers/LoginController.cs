@@ -95,5 +95,59 @@ namespace QuanLyNgayLaoDong.Controllers
             FormsAuthentication.SignOut();
             return RedirectToAction("Login");
         }
+
+
+        // khu vực dành cho quên mật khẩu
+
+        public ActionResult ForgotPassword()
+        {
+            return View(); // Trả về View ForgotPassword.cshtml
+        }
+
+        [HttpPost]
+        public ActionResult ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                ViewBag.Message = "Vui lòng nhập địa chỉ email.";
+                return View();
+            }
+
+            var user = _contextdb.TaiKhoans.FirstOrDefault(u => u.email == email);
+            if (user == null)
+            {
+                ViewBag.Message = "Email không tồn tại trong hệ thống.";
+                return View();
+            }
+
+            try
+            {
+                // Tạo token: email|timestamp -> base64
+                string token = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(email + "|" + DateTime.Now));
+
+                // Tạo đường dẫn reset
+                string resetLink = Url.Action("ResetPassword", "Login", new { token = token }, Request.Url.Scheme);
+
+                // Gửi email
+                bool sent = EmailHelper.SendPasswordResetEmail(email, resetLink);
+
+                if (sent)
+                {
+                    ViewBag.Message = "Email đặt lại mật khẩu đã được gửi đến địa chỉ của bạn.";
+                }
+                else
+                {
+                    ViewBag.Message = "Gửi email thất bại. Vui lòng thử lại sau.";
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = "Đã xảy ra lỗi: " + ex.Message;
+            }
+
+            return View();
+        }
+
+
     }
 }
